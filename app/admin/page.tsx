@@ -4,11 +4,13 @@ import {
   Mail,
   MessageSquare,
   Newspaper,
+  Zap,
   Trophy,
   Users,
 } from "lucide-react";
 import Link from "next/link";
 import { Card, CardContent } from "@/components/ui/card";
+import { PipelineTrigger } from "@/components/admin/pipeline-trigger";
 import { getAdminStats } from "@/lib/services/admin-stats";
 
 export default async function AdminDashboardPage() {
@@ -50,16 +52,19 @@ export default async function AdminDashboardPage() {
         Mission control for the meme economy.
       </p>
 
-      {pendingTotal > 0 ? (
-        <Link
-          href="/admin/moderation"
-          className="mb-6 flex items-center gap-3 rounded-xl border border-amber-500/40 bg-amber-500/10 px-4 py-3 text-sm font-medium text-amber-700 transition-colors hover:bg-amber-500/20 dark:text-amber-400"
-        >
-          <Flag className="size-4" />
-          {pendingTotal} item{pendingTotal === 1 ? "" : "s"} waiting for moderation — the queue
-          grows restless.
-        </Link>
-      ) : null}
+      <div className="mb-6 space-y-3">
+        <PipelineTrigger />
+        {pendingTotal > 0 ? (
+          <Link
+            href="/admin/moderation"
+            className="flex items-center gap-3 rounded-xl border border-amber-500/40 bg-amber-500/10 px-4 py-3 text-sm font-medium text-amber-700 transition-colors hover:bg-amber-500/20 dark:text-amber-400"
+          >
+            <Flag className="size-4" />
+            {pendingTotal} item{pendingTotal === 1 ? "" : "s"} waiting for moderation — the queue
+            grows restless.
+          </Link>
+        ) : null}
+      </div>
 
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
         {cards.map(({ label, value, sub, icon: Icon, href }) => (
