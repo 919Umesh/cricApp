@@ -195,14 +195,19 @@ export async function runIngestionPipeline(): Promise<PipelineReport> {
 
   // 4. Meme scores + trending flags.
   for (const [playerId, delta] of touchedPlayers) {
-    await tables.incrementRowColumn({
-      databaseId: DB,
-      tableId: TABLES.PLAYERS,
-      rowId: playerId,
-      column: "memeScore",
-      value: delta,
-      max: 100,
-    });
+    try {
+      await tables.incrementRowColumn({
+        databaseId: DB,
+        tableId: TABLES.PLAYERS,
+        rowId: playerId,
+        column: "memeScore",
+        value: delta,
+        max: 100,
+      });
+    } catch (err) {
+      if ((err as { code?: number }).code !== 400) throw err;
+      // Player already at max score — skip increment but still mark trending
+    }
     await tables.updateRow({
       databaseId: DB,
       tableId: TABLES.PLAYERS,
