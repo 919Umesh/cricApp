@@ -8,10 +8,33 @@ import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { listPlayers } from "@/lib/services/players";
 
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
+
 export const metadata: Metadata = {
-  title: "Players",
+  title: "Cricket Players | Nepal Team Profiles & Stats",
   description:
     "Nepal's finest cricketers, ranked by meme score, fan love and duck collection. Profiles, stats and satire timelines.",
+  keywords: [
+    "nepal cricket players",
+    "cricket profiles",
+    "nepal cricket team",
+    "cricket statistics",
+    "batters",
+    "bowlers",
+  ],
+  alternates: { canonical: `${siteUrl}/players` },
+  openGraph: {
+    type: "website",
+    title: "Nepal Cricket Players | Silly Point",
+    description:
+      "Nepal's finest cricketers, ranked by meme score. Profiles, stats and satire timelines.",
+    url: `${siteUrl}/players`,
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Nepal Cricket Players | Silly Point",
+    creator: "@cricsatire",
+  },
 };
 
 const ROLES = ["Batter", "Bowler", "All-Rounder", "Wicket-Keeper"] as const;

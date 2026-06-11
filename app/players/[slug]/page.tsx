@@ -23,15 +23,37 @@ export async function generateMetadata({
   const { slug } = await params;
   const player = await getPlayerBySlug(slug);
   if (!player) return { title: "Player not found" };
+  const description =
+    player.bio?.slice(0, 160) ?? `${player.name}'s profile: stats, memes and satire timeline.`;
+  const image = resolveImage(player.image, "/placeholder-player.svg");
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
+  const canonicalUrl = `${siteUrl}/players/${player.slug}`;
   return {
     title: `${player.name} — Profile, Stats & Satire`,
-    description:
-      player.bio?.slice(0, 160) ??
-      `${player.name}'s profile: stats, memes and satire timeline.`,
+    description,
+    keywords: [player.name, player.team, "cricket", "nepal", player.role],
+    authors: [{ name: "Silly Point" }],
+    alternates: { canonical: canonicalUrl },
     openGraph: {
-      title: `${player.name} | Silly Point`,
-      description: player.bio?.slice(0, 200) ?? `${player.name} on Silly Point.`,
-      images: [resolveImage(player.image, "/placeholder-player.svg")],
+      type: "profile",
+      title: `${player.name} | Cricket Profile`,
+      description,
+      images: [
+        {
+          url: image,
+          width: 1200,
+          height: 1200,
+          alt: player.name,
+        },
+      ],
+      url: canonicalUrl,
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: `${player.name} on Silly Point`,
+      description,
+      images: [image],
+      creator: "@cricsatire",
     },
   };
 }
@@ -131,8 +153,44 @@ async function PlayerProfile({ params }: { params: Promise<{ slug: string }> }) 
             "@context": "https://schema.org",
             "@type": "Person",
             name: player.name,
+            image: resolveImage(player.image, `http://localhost:3000/placeholder-player.svg`),
             jobTitle: `Cricketer (${player.role})`,
-            affiliation: { "@type": "SportsTeam", name: player.team },
+            url: `http://localhost:3000/players/${player.slug}`,
+            affiliation: {
+              "@type": "SportsTeam",
+              name: player.team,
+              url: "https://cricketnepal.org",
+            },
+            description: player.bio || undefined,
+          }),
+        }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "BreadcrumbList",
+            itemListElement: [
+              {
+                "@type": "ListItem",
+                position: 1,
+                name: "Home",
+                item: "http://localhost:3000",
+              },
+              {
+                "@type": "ListItem",
+                position: 2,
+                name: "Players",
+                item: "http://localhost:3000/players",
+              },
+              {
+                "@type": "ListItem",
+                position: 3,
+                name: player.name,
+                item: `http://localhost:3000/players/${player.slug}`,
+              },
+            ],
           }),
         }}
       />

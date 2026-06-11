@@ -14,10 +14,32 @@ import {
   type SatireCategory,
 } from "@/lib/types";
 
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
+
 export const metadata: Metadata = {
-  title: "Satire Posts",
+  title: "Satire Posts | Cricket Satire & Commentary",
   description:
-    "The Golden Duck Club, Collapse of the Week, Catch Drop Legends and more — Nepali cricket's finest disasters, lovingly documented.",
+    "The Golden Duck Club, Collapse of the Week, and more — Nepali cricket's finest disasters, lovingly documented. Cricket satire, memes, and humor.",
+  keywords: [
+    "cricket satire",
+    "cricket humor",
+    "nepal cricket",
+    "cricket commentary",
+    "cricket memes",
+  ],
+  alternates: { canonical: `${siteUrl}/posts` },
+  openGraph: {
+    type: "website",
+    title: "Cricket Satire Posts | Silly Point",
+    description:
+      "The Golden Duck Club, Collapse of the Week — Nepali cricket's finest disasters, lovingly documented.",
+    url: `${siteUrl}/posts`,
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Cricket Satire Posts | Silly Point",
+    creator: "@cricsatire",
+  },
 };
 
 const PAGE_SIZE = 12;

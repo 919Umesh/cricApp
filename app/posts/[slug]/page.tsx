@@ -28,21 +28,37 @@ export async function generateMetadata({
   if (!post) return { title: "Post not found" };
   const description = post.excerpt ?? post.content.slice(0, 160);
   const image = resolveImage(post.image, "/placeholder-post.svg");
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
+  const canonicalUrl = `${siteUrl}/posts/${post.slug}`;
   return {
     title: post.title,
     description,
+    keywords: [post.title, "cricket satire", "cricket humor", SITE_NAME],
+    authors: [{ name: SITE_NAME }],
+    alternates: { canonical: canonicalUrl },
     openGraph: {
       type: "article",
       title: post.title,
       description,
-      images: [image],
+      images: [
+        {
+          url: image,
+          width: 1200,
+          height: 630,
+          alt: post.title,
+        },
+      ],
       publishedTime: post.$createdAt,
+      modifiedTime: post.$updatedAt,
+      tags: [post.category, "cricket", "nepal"],
+      url: canonicalUrl,
     },
     twitter: {
       card: "summary_large_image",
       title: post.title,
       description,
       images: [image],
+      creator: "@cricsatire",
     },
   };
 }
@@ -114,15 +130,61 @@ async function PostArticle({ params }: { params: Promise<{ slug: string }> }) {
         dangerouslySetInnerHTML={{
           __html: JSON.stringify({
             "@context": "https://schema.org",
-            "@type": "Article",
+            "@type": "NewsArticle",
             headline: post.title,
             description: post.excerpt ?? undefined,
-            image: resolveImage(post.image, `${siteUrl}/placeholder-post.svg`),
+            image: {
+              "@type": "ImageObject",
+              url: resolveImage(post.image, `${siteUrl}/placeholder-post.svg`),
+              width: 1200,
+              height: 630,
+            },
             datePublished: post.$createdAt,
             dateModified: post.$updatedAt,
             author: { "@type": "Organization", name: SITE_NAME },
-            publisher: { "@type": "Organization", name: SITE_NAME },
-            mainEntityOfPage: `${siteUrl}/posts/${post.slug}`,
+            publisher: {
+              "@type": "Organization",
+              name: SITE_NAME,
+              logo: {
+                "@type": "ImageObject",
+                url: `${siteUrl}/logo.svg`,
+              },
+            },
+            mainEntityOfPage: {
+              "@type": "WebPage",
+              "@id": `${siteUrl}/posts/${post.slug}`,
+            },
+            articleSection: "Cricket Satire",
+            keywords: ["cricket", "nepal", "satire", "humor"],
+          }),
+        }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "BreadcrumbList",
+            itemListElement: [
+              {
+                "@type": "ListItem",
+                position: 1,
+                name: "Home",
+                item: siteUrl,
+              },
+              {
+                "@type": "ListItem",
+                position: 2,
+                name: "Posts",
+                item: `${siteUrl}/posts`,
+              },
+              {
+                "@type": "ListItem",
+                position: 3,
+                name: post.title,
+                item: `${siteUrl}/posts/${post.slug}`,
+              },
+            ],
           }),
         }}
       />
